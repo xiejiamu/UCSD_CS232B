@@ -1,42 +1,49 @@
 grammar XPath;
 
 @header {
-package parsers;
+    package org.example.parsers;
 }
 
-parse: ap+;
-
-/* Rules */
+// Parser rules
 ap: docName slash rp;
 
-rp: tagName #Tag | STAR #All | CURRENT #Current | PARENT #Parent | TEXT #Text
-    | attrName #Attribute
-    | LPR rp RPR #ParaRp
-    | rp slash rp #SlashRp
-    | rp LSB f RSB #FilterRp
-    | rp COMMA rp #CommaRp;
+rp: tagName             #Tag
+   | STAR               #All
+   | CURRENT            #Current
+   | PARENT             #Parent
+   | TEXT               #Text
+   | attrName           #Attribute
+   | LPR rp RPR         #ParenthesizedRp
+   | rp slash rp        #SlashRp
+   | rp LSB f RSB       #FilterRp
+   | rp COMMA rp        #CommaRp;
 
-f:  rp #RpFilter
-    | rp comp rp #CompareFilter
-    |rp EQ_N stringConstant #ConstantFilter
-    | LPR f RPR #ParaFilter
-    | f logic f #LogicFilter
-    | NOT f #NotFilter;
+f: rp                   #RpFilter
+   | rp comp rp         #CompareFilter
+   | rp EQ_N stringConstant #ConstantFilter
+   | LPR f RPR          #ParenthesizedFilter
+   | f logic f          #LogicFilter
+   | NOT f              #NotFilter;
 
-/* Define term */
+// Helper rules for structure
 slash: SSLASH | DSLASH;
 docName: doc LPR STRING RPR;
 
+// Elements and attributes
 tagName: ID;
 attrName: AT ID;
+
+// Comparison and logical operators
 comp: EQ | EQ_N | IS | IS_N;
 logic: AND | OR;
 
+// Constants
 stringConstant: STRING;
 
+// Keywords
 doc: 'doc' | 'document';
 
-/*Tokens*/
+// Tokens (unchanged as per request)
 LPR: '(';
 RPR: ')';
 LSB: '[';
@@ -65,24 +72,6 @@ AT: '@';
 ID: [a-zA-Z0-9_-]+;
 WS: [ \t\n\r]+ -> skip;
 
-STRING
-:
-   '"'
-   (
-      ESCAPE
-      | ~["\\]
-   )* '"'
-   | '\''
-   (
-      ESCAPE
-      | ~['\\]
-   )* '\''
-;
+STRING: '"' ( ESCAPE | ~["\\] )* '"' | '\'' ( ESCAPE | ~['\\] )* '\'';
 
-ESCAPE
-:
-   '\\'
-   (
-      ['"\\]
-   )
-;
+ESCAPE: '\\' ( ['"\\] );

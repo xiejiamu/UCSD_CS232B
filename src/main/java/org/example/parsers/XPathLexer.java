@@ -1,7 +1,6 @@
 // Generated from XPath.g4 by ANTLR 4.9.3
 
-package org.example.parsers;
-
+    package org.example.parsers;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

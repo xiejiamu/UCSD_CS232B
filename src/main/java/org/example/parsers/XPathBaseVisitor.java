@@ -1,6 +1,6 @@
 // Generated from XPath.g4 by ANTLR 4.9.3
 
-package org.example.parsers;
+    package org.example.parsers;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -13,13 +13,6 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 public class XPathBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements XPathVisitor<T> {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitParse(XPathParser.ParseContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -40,7 +33,7 @@ public class XPathBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParaRp(XPathParser.ParaRpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParenthesizedRp(XPathParser.ParenthesizedRpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -131,14 +124,14 @@ public class XPathBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParaFilter(XPathParser.ParaFilterContext ctx) { return visitChildren(ctx); }
+	@Override public T visitRpFilter(XPathParser.RpFilterContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitRpFilter(XPathParser.RpFilterContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

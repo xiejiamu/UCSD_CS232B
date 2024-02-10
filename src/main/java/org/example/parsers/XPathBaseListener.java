@@ -1,6 +1,6 @@
 // Generated from XPath.g4 by ANTLR 4.9.3
 
-package org.example.parsers;
+    package org.example.parsers;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -13,18 +13,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class XPathBaseListener implements XPathListener {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParse(XPathParser.ParseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParse(XPathParser.ParseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -54,13 +42,13 @@ public class XPathBaseListener implements XPathListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParaRp(XPathParser.ParaRpContext ctx) { }
+	@Override public void enterParenthesizedRp(XPathParser.ParenthesizedRpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParaRp(XPathParser.ParaRpContext ctx) { }
+	@Override public void exitParenthesizedRp(XPathParser.ParenthesizedRpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -210,18 +198,6 @@ public class XPathBaseListener implements XPathListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParaFilter(XPathParser.ParaFilterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParaFilter(XPathParser.ParaFilterContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterRpFilter(XPathParser.RpFilterContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -229,6 +205,18 @@ public class XPathBaseListener implements XPathListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRpFilter(XPathParser.RpFilterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

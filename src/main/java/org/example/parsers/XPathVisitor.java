@@ -1,6 +1,6 @@
 // Generated from XPath.g4 by ANTLR 4.9.3
 
-package org.example.parsers;
+    package org.example.parsers;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -12,12 +12,6 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * operations with no return type.
  */
 public interface XPathVisitor<T> extends ParseTreeVisitor<T> {
-	/**
-	 * Visit a parse tree produced by {@link XPathParser#parse}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParse(XPathParser.ParseContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link XPathParser#ap}.
 	 * @param ctx the parse tree
@@ -32,12 +26,12 @@ public interface XPathVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAll(XPathParser.AllContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ParaRp}
+	 * Visit a parse tree produced by the {@code ParenthesizedRp}
 	 * labeled alternative in {@link XPathParser#rp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParaRp(XPathParser.ParaRpContext ctx);
+	T visitParenthesizedRp(XPathParser.ParenthesizedRpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Parent}
 	 * labeled alternative in {@link XPathParser#rp}.
@@ -123,19 +117,19 @@ public interface XPathVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstantFilter(XPathParser.ConstantFilterContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ParaFilter}
-	 * labeled alternative in {@link XPathParser#f}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParaFilter(XPathParser.ParaFilterContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code RpFilter}
 	 * labeled alternative in {@link XPathParser#f}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitRpFilter(XPathParser.RpFilterContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParenthesizedFilter}
+	 * labeled alternative in {@link XPathParser#f}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link XPathParser#slash}.
 	 * @param ctx the parse tree

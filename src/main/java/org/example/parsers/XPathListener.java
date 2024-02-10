@@ -1,6 +1,6 @@
 // Generated from XPath.g4 by ANTLR 4.9.3
 
-package org.example.parsers;
+    package org.example.parsers;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -9,16 +9,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link XPathParser}.
  */
 public interface XPathListener extends ParseTreeListener {
-	/**
-	 * Enter a parse tree produced by {@link XPathParser#parse}.
-	 * @param ctx the parse tree
-	 */
-	void enterParse(XPathParser.ParseContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link XPathParser#parse}.
-	 * @param ctx the parse tree
-	 */
-	void exitParse(XPathParser.ParseContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link XPathParser#ap}.
 	 * @param ctx the parse tree
@@ -42,17 +32,17 @@ public interface XPathListener extends ParseTreeListener {
 	 */
 	void exitAll(XPathParser.AllContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ParaRp}
+	 * Enter a parse tree produced by the {@code ParenthesizedRp}
 	 * labeled alternative in {@link XPathParser#rp}.
 	 * @param ctx the parse tree
 	 */
-	void enterParaRp(XPathParser.ParaRpContext ctx);
+	void enterParenthesizedRp(XPathParser.ParenthesizedRpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ParaRp}
+	 * Exit a parse tree produced by the {@code ParenthesizedRp}
 	 * labeled alternative in {@link XPathParser#rp}.
 	 * @param ctx the parse tree
 	 */
-	void exitParaRp(XPathParser.ParaRpContext ctx);
+	void exitParenthesizedRp(XPathParser.ParenthesizedRpContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Parent}
 	 * labeled alternative in {@link XPathParser#rp}.
@@ -198,18 +188,6 @@ public interface XPathListener extends ParseTreeListener {
 	 */
 	void exitConstantFilter(XPathParser.ConstantFilterContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ParaFilter}
-	 * labeled alternative in {@link XPathParser#f}.
-	 * @param ctx the parse tree
-	 */
-	void enterParaFilter(XPathParser.ParaFilterContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ParaFilter}
-	 * labeled alternative in {@link XPathParser#f}.
-	 * @param ctx the parse tree
-	 */
-	void exitParaFilter(XPathParser.ParaFilterContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code RpFilter}
 	 * labeled alternative in {@link XPathParser#f}.
 	 * @param ctx the parse tree
@@ -221,6 +199,18 @@ public interface XPathListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitRpFilter(XPathParser.RpFilterContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ParenthesizedFilter}
+	 * labeled alternative in {@link XPathParser#f}.
+	 * @param ctx the parse tree
+	 */
+	void enterParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ParenthesizedFilter}
+	 * labeled alternative in {@link XPathParser#f}.
+	 * @param ctx the parse tree
+	 */
+	void exitParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link XPathParser#slash}.
 	 * @param ctx the parse tree
