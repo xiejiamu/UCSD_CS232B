@@ -1,6 +1,6 @@
-// Generated from D:/UCSD_232B/src/main/resources/XPath.g4 by ANTLR 4.13.1
+// Generated from XPath.g4 by ANTLR 4.9.3
 
-package parsers;
+package org.example.parsers;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
