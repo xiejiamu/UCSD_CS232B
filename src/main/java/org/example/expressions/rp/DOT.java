@@ -1,11 +1,12 @@
-package org.example.expressions;
+package org.example.expressions.rp;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DOT implements Expression{
+public class DOT implements Expression {
     enum DotType {
         CURR, PARENT
     }

@@ -1,12 +1,13 @@
-package org.example.expressions;
+package org.example.expressions.rp;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Text implements Expression{
+public class Text implements Expression {
 
     @Override
     public List<Node> evaluate(List<Node> inputNodes) {

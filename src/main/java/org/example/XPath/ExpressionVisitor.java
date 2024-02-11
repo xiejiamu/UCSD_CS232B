@@ -2,6 +2,7 @@ package org.example.XPath;
 
 import org.example.expressions.*;
 import org.example.expressions.filter.*;
+import org.example.expressions.rp.*;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
 

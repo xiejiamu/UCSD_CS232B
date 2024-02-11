@@ -1,12 +1,13 @@
-package org.example.expressions;
+package org.example.expressions.rp;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Star implements Expression{
+public class Star implements Expression {
 
     public Star() {
     }

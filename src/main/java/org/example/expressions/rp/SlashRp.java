@@ -1,5 +1,6 @@
-package org.example.expressions;
+package org.example.expressions.rp;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class SlashRp implements Expression{
+public class SlashRp implements Expression {
     final private Expression leftRp;
     final private Expression rightRp;
     final private Slash op;

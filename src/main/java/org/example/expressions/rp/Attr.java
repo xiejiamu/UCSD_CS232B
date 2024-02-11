@@ -1,11 +1,12 @@
-package org.example.expressions;
+package org.example.expressions.rp;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Attr implements Expression{
+public class Attr implements Expression {
     private String attr;
     public Attr(String attr) {
         this.attr = attr;
