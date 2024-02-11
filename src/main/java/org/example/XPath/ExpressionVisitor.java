@@ -33,12 +33,16 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitSlashRp(XPathParser.SlashRpContext ctx) {
-        return super.visitSlashRp(ctx);
+        Expression left = visit(ctx.rp(0));
+        Expression right = visit(ctx.rp(1));
+        return new SlashRp(left, right, Expression.getSlashType(ctx.slash().getText()));
     }
 
     @Override
     public Expression visitFilterRp(XPathParser.FilterRpContext ctx) {
-        return super.visitFilterRp(ctx);
+        Expression rp = visit(ctx.rp());
+        Expression ft = visit(ctx.f());
+        return new FilterRp(rp, ft);
     }
 
     @Override
@@ -58,7 +62,9 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitCommaRp(XPathParser.CommaRpContext ctx) {
-        return super.visitCommaRp(ctx);
+        Expression left = visit(ctx.rp(0));
+        Expression right = visit(ctx.rp(1));
+        return new CommaRp(left, right);
     }
 
     @Override

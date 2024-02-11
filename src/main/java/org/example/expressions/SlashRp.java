@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class SlashRp implements Expression{
-    public SlashRp(Expression leftRp, Expression rightRp, String op) {
+    public SlashRp(Expression leftRp, Expression rightRp, Slash op) {
         Objects.requireNonNull(leftRp, "leftRp is NULL!");
         Objects.requireNonNull(rightRp, "rightRp content is NULL!");
         Objects.requireNonNull(op, "op path is NULL!");
@@ -21,7 +21,7 @@ public class SlashRp implements Expression{
     @Override
     public List<Node> evaluate(List<Node> inputNodes){
         List<Node> leftResult = leftRp.evaluate(inputNodes);
-        if (op.equals("/")) {
+        if (op == Slash.SSLASH) {
             return new ArrayList<>(new HashSet<>(rightRp.evaluate(leftResult)));
         }else{
             List<Node> rightInput = new ArrayList<>();
@@ -32,5 +32,5 @@ public class SlashRp implements Expression{
 
     final private Expression leftRp;
     final private Expression rightRp;
-    final private String op;
+    final private Slash op;
 }

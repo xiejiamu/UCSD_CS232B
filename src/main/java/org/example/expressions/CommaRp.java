@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class CommaRp implements Expression{
-    public CommaRp(Expression leftRp, Expression rightRp, String op) {
+    public CommaRp(Expression leftRp, Expression rightRp) {
         Objects.requireNonNull(leftRp, "leftRp is NULL!");
         Objects.requireNonNull(rightRp, "rightRp content is NULL!");
-        Objects.requireNonNull(op, "op path is NULL!");
 
         this.leftRp = leftRp;
         this.rightRp = rightRp;
-        this.op = op;
     }
 
     @Override
@@ -28,5 +26,4 @@ public class CommaRp implements Expression{
 
     final private Expression leftRp;
     final private Expression rightRp;
-    final private String op;
 }
