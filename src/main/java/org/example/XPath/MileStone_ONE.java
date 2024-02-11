@@ -1,7 +1,6 @@
 package org.example.XPath;
 
 
-
 public class MileStone_ONE {
     public static void main(String[] args) throws Exception {
         XPathEvaluator xpathEvaluator = new XPathEvaluator();

@@ -5,6 +5,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -86,11 +87,7 @@ public class XPathEvaluator {
     }
 
     private void printNodeContent(Node node, Transformer transformer) throws Exception {
-        if (node instanceof Attr || node instanceof Text) {
-            System.out.println(node.getTextContent());
-        } else {
-            transformer.transform(new DOMSource(node), new StreamResult(System.out));
-        }
+        transformer.transform(new DOMSource(node), new StreamResult(System.out));
     }
 
     /**
@@ -104,6 +101,26 @@ public class XPathEvaluator {
         // You might need to adjust the logic based on how the input string is structured.
         List<Node> nodes = evaluateXPath(path);
         outputTransformedNodes(nodes);
+    }
+
+    public void execute(String path, String outputpath) throws Exception {
+        List<Node> nodes = evaluateXPath(path);
+        outputTransformedNodes(nodes, outputpath);
+    }
+
+    private void outputTransformedNodes(List<Node> result, String outputpath) throws Exception {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        configureTransformer(transformer);
+
+        // 使用FileOutputStream定向输出到文件，而不是System.out
+        FileOutputStream fos = new FileOutputStream(outputpath, false); // false表示不追加，即覆盖原文件
+        StreamResult streamResult = new StreamResult(fos);
+
+        for (Node node : result) {
+            transformer.transform(new DOMSource(node), streamResult);
+        }
+
+        fos.close(); // 完成后关闭文件输出流
     }
 
 }
