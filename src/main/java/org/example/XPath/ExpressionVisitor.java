@@ -18,7 +18,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitParenthesizedRp(XPathParser.ParenthesizedRpContext ctx) {
-        return super.visitParenthesizedRp(ctx);
+        return visit(ctx.rp());
     }
 
     @Override
