@@ -96,7 +96,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitParenthesizedFilter(XPathParser.ParenthesizedFilterContext ctx) {
-        return super.visitParenthesizedFilter(ctx);
+        return new ParaFt(visit(ctx.f()));
     }
 
     @Override
