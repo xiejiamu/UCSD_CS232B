@@ -1,9 +1,6 @@
 package org.example.XPath;
 
-import org.example.expressions.AbsolutePath;
-import org.example.expressions.Expression;
-import org.example.expressions.Star;
-import org.example.expressions.Tag;
+import org.example.expressions.*;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
 
@@ -26,7 +23,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitParent(XPathParser.ParentContext ctx) {
-        return super.visitParent(ctx);
+        return new DOT(DOT.getdotType(ctx.getText()));
     }
 
     @Override
@@ -56,7 +53,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitCurrent(XPathParser.CurrentContext ctx) {
-        return super.visitCurrent(ctx);
+        return new DOT(DOT.getdotType(ctx.getText()));
     }
 
     @Override
