@@ -2,6 +2,7 @@ package org.example.XPath;
 
 import org.example.expressions.AbsolutePath;
 import org.example.expressions.Expression;
+import org.example.expressions.Star;
 import org.example.expressions.Tag;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
@@ -15,7 +16,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitAll(XPathParser.AllContext ctx) {
-        return super.visitAll(ctx);
+        return new Star();
     }
 
     @Override
