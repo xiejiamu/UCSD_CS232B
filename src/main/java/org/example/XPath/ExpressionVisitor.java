@@ -70,7 +70,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitLogicFilter(XPathParser.LogicFilterContext ctx) {
-        return super.visitLogicFilter(ctx);
+        return new LogicFt(visit(ctx.f(0)), visit(ctx.f(1)), ctx.logic().getText());
     }
 
     @Override
