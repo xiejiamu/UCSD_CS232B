@@ -86,7 +86,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitConstantFilter(XPathParser.ConstantFilterContext ctx) {
-        return new ConstantFt(visit(ctx.rp()), ctx.stringConstant().getText());
+        return new ConstantFt(visit(ctx.rp()), ctx.stringConstant().getText().substring(1, ctx.stringConstant().getText().length()-1));
     }
 
     @Override
