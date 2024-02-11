@@ -25,11 +25,7 @@ public class Main {
                 query.append(str.replaceAll("\r\n|\r|\n", " "));
                 query.append(" ");
             }
-//            XPath xpath = new XPath();
-//            List<Node> result = xpath.evaluate(query.toString());
-//            System.out.printf("returned results: %d\n", result.size());
-//            xpath.transform(result);
-//            xpath.transform(result, outputpath);
+
             System.out.println("Query: " + query.toString());
             XPathEvaluator xpath = new XPathEvaluator();
             xpath.execute(query.toString());
