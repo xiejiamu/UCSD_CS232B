@@ -28,7 +28,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitAttribute(XPathParser.AttributeContext ctx) {
-        return super.visitAttribute(ctx);
+        return new Attr(ctx.attrName().ID().getText());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitText(XPathParser.TextContext ctx) {
-        return super.visitText(ctx);
+        return new Text();
     }
 
     @Override
