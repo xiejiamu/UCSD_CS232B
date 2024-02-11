@@ -32,18 +32,6 @@ public class AbsolutePath implements Expression{
         }
     }
 
-    private void getAllDescentNodes(List<Node> inputNodes, List<Node> result) {
-        for(Node n: inputNodes) {
-            result.add(n);
-            NodeList childNodes = n.getChildNodes();
-            List<Node> children = new ArrayList<>();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                children.add(childNodes.item(i));
-            }
-            getAllDescentNodes(children, result);
-        }
-    }
-
     @Override
     public String toString() {
         return "AbsolutePath{" +
