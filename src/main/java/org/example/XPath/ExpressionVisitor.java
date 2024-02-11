@@ -1,6 +1,7 @@
 package org.example.XPath;
 
 import org.example.expressions.*;
+import org.example.expressions.filter.SingleFt;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
 
@@ -89,7 +90,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitRpFilter(XPathParser.RpFilterContext ctx) {
-        return super.visitRpFilter(ctx);
+        return new SingleFt(visit(ctx.rp()));
     }
 
     @Override
