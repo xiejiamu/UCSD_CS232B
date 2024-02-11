@@ -1,6 +1,7 @@
 package org.example.XPath;
 
 import org.example.expressions.*;
+import org.example.expressions.filter.CompareFt;
 import org.example.expressions.filter.SingleFt;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
@@ -75,7 +76,7 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitCompareFilter(XPathParser.CompareFilterContext ctx) {
-        return super.visitCompareFilter(ctx);
+        return new CompareFt(visit(ctx.rp(0)), visit(ctx.rp(1)), ctx.comp().getText());
     }
 
     @Override
