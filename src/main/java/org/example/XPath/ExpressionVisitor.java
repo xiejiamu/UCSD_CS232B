@@ -1,8 +1,7 @@
 package org.example.XPath;
 
 import org.example.expressions.*;
-import org.example.expressions.filter.CompareFt;
-import org.example.expressions.filter.SingleFt;
+import org.example.expressions.filter.*;
 import org.example.parsers.XPathBaseVisitor;
 import org.example.parsers.XPathParser;
 
@@ -81,12 +80,13 @@ public class ExpressionVisitor extends XPathBaseVisitor<Expression>{
 
     @Override
     public Expression visitNotFilter(XPathParser.NotFilterContext ctx) {
-        return super.visitNotFilter(ctx);
+        Expression ft = visit(ctx.f());
+        return new NotFt(ft);
     }
 
     @Override
     public Expression visitConstantFilter(XPathParser.ConstantFilterContext ctx) {
-        return super.visitConstantFilter(ctx);
+        return new ConstantFt(visit(ctx.rp()), ctx.stringConstant().getText());
     }
 
     @Override
