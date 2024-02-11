@@ -23,6 +23,11 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,4 +93,29 @@ public class XPath {
             transformer.transform(new DOMSource(node), new StreamResult(new PrintStream(System.out)));
         }
     }
+
+    public void transform(List<Node> result, String outputpath) throws Exception {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+        // 使用FileOutputStream定向输出到文件，而不是System.out
+        FileOutputStream fos = new FileOutputStream(outputpath, false); // false表示不追加，即覆盖原文件
+        StreamResult streamResult = new StreamResult(fos);
+
+        for (Node node : result) {
+            if (node instanceof Attr){
+                System.out.println(node.getTextContent()); // 或写入到文件
+                continue;
+            }
+            if (node instanceof Text){
+                System.out.println(node.getTextContent()); // 或写入到文件
+                continue;
+            }
+            transformer.transform(new DOMSource(node), streamResult);
+        }
+
+        fos.close(); // 完成后关闭文件输出流
+    }
+
 }
