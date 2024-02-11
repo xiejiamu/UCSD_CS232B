@@ -10,8 +10,6 @@ public class ParenthesizedRp implements Expression{
     final private Expression rp;
 
     public ParenthesizedRp(Expression rp) {
-        Objects.requireNonNull(rp, "rp is NULL!");
-
         this.rp = rp;
     }
 

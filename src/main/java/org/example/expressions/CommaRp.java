@@ -7,9 +7,6 @@ import java.util.Objects;
 
 public class CommaRp implements Expression{
     public CommaRp(Expression leftRp, Expression rightRp) {
-        Objects.requireNonNull(leftRp, "leftRp is NULL!");
-        Objects.requireNonNull(rightRp, "rightRp content is NULL!");
-
         this.leftRp = leftRp;
         this.rightRp = rightRp;
     }

@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+
 
 public class LogicFt implements Filter{
 
@@ -24,10 +24,10 @@ public class LogicFt implements Filter{
     @Override
     public List<Node> evaluate(List<Node> inputNodes) {
         if(this.conj.equals("and")) {
-            List<Node> leftResult = this.ft1.evaluate(inputNodes);  // subset of original inputNodes
+            List<Node> leftResult = this.ft1.evaluate(inputNodes);
             return this.ft2.evaluate(leftResult);
         }
-        // else if(this.conj.equals("or"))
+
         List<Node> result = new ArrayList<>();
         for (Node n : inputNodes) {
             if (!this.ft1.evaluate(Arrays.asList(n)).isEmpty() || !this.ft2.evaluate(Arrays.asList(n)).isEmpty()) {

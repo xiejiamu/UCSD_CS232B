@@ -14,9 +14,6 @@ public class ConstantFt implements Filter {
     final private String constant;
 
     public ConstantFt(Expression leftRp, String constant) {
-        Objects.requireNonNull(leftRp, "leftRp is NULL!");
-        Objects.requireNonNull(constant, "condition constant is NULL!");
-
         this.leftRp = leftRp;
         this.constant = constant;
     }
