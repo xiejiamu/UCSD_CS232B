@@ -64,7 +64,7 @@ public class XPathEvaluator {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
     }
 
-    private XPathParser createParser(String expression) {
+    public XPathParser createParser(String expression) {
         XPathLexer lexer = new XPathLexer(CharStreams.fromString(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         return new XPathParser(tokens);

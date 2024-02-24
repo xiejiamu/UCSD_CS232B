@@ -5,6 +5,8 @@ import org.example.XPath.XPathEvaluator;
 import org.example.parsers.XQueryBaseVisitor;
 import org.example.parsers.XQueryParser;
 import org.example.queries.BaseXQuery;
+import org.example.queries.xq.ApXq;
+import org.example.queries.xq.BinaryXq;
 import org.example.queries.xq.VarXq;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -34,5 +36,21 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         List<Node> nodes = this.map.get(ctx.VAR().getText());
         List<Node> reslist = new ArrayList<>(nodes);
         return new VarXq(reslist);
+    }
+
+    @Override
+    public BaseXQuery visitApXq(XQueryParser.ApXqContext ctx) {
+        List<Node> list = new ArrayList<>();
+        try {
+            list = this.xPathEvaluator.evaluateXPath(ctx.ap().getText());
+        } catch (Exception e) { // Replace SpecificException with the actual exception type
+            e.printStackTrace();
+        }
+        return new ApXq(list);
+    }
+
+    @Override
+    public BaseXQuery visitBinaryXq(XQueryParser.BinaryXqContext ctx) {
+        return new BinaryXq(this.visit(ctx.xq(0)), this.visit(ctx.xq(1)));
     }
 }
