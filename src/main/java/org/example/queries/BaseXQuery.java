@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public interface BaseXQuery {
 
-    List<Node> evaluate(List<Node> nodes) throws Exception;
+    List<Node> evaluate(Document document) throws Exception;
 
     default void getAllDescentNodes(List<Node> inputNodes, List<Node> result) {
         for(Node n: inputNodes) {
