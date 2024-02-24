@@ -7,6 +7,7 @@ import org.example.parsers.XQueryParser;
 import org.example.queries.BaseXQuery;
 import org.example.queries.xq.ApXq;
 import org.example.queries.xq.BinaryXq;
+import org.example.queries.xq.TagXq;
 import org.example.queries.xq.VarXq;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -52,5 +53,10 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     @Override
     public BaseXQuery visitBinaryXq(XQueryParser.BinaryXqContext ctx) {
         return new BinaryXq(this.visit(ctx.xq(0)), this.visit(ctx.xq(1)));
+    }
+
+    @Override
+    public BaseXQuery visitTagXq(XQueryParser.TagXqContext ctx) {
+        return new TagXq(ctx.startTag().tagName().getText(), visit(ctx.xq()));
     }
 }
