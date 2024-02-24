@@ -64,10 +64,14 @@ public class XPathEvaluator {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
     }
 
-    private Expression parseExpression(String expression) throws IOException {
+    private XPathParser createParser(String expression) {
         XPathLexer lexer = new XPathLexer(CharStreams.fromString(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        XPathParser parser = new XPathParser(tokens);
+        return new XPathParser(tokens);
+    }
+
+    private Expression parseExpression(String expression) throws IOException {
+        XPathParser parser = this.createParser(expression);
         ParserRuleContext tree = parser.ap();
         ExpressionVisitor visitor = new ExpressionVisitor();
         return visitor.visit(tree);
