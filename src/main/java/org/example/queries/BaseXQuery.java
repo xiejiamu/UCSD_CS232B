@@ -1,5 +1,6 @@
 package org.example.queries;
 
+import org.example.expressions.Expression;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -35,6 +36,18 @@ public interface BaseXQuery {
             }
         }
         return node;
+    }
+    static Slash getSlashType(String s){
+        if(s.equals("/")) {
+            return Slash.SSLASH;
+        } else if (s.equals("//")){
+            return Slash.DSLASH;
+        } else {
+            return null;
+        }
+    }
+    enum Slash{
+        SSLASH, DSLASH
     }
 
 }

@@ -19,7 +19,6 @@ public class TagXq implements BaseXQuery {
 
     @Override
     public List<Node> evaluate(Document document) throws Exception {
-        // TODO
         return new ArrayList<>(Arrays.asList(makeElement(document, this.tag, this.query.evaluate(document))));
     }
 }

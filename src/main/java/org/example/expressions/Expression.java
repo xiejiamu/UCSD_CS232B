@@ -9,7 +9,7 @@ import java.util.List;
 public interface Expression {
     List<Node> evaluate(List<Node> inputNodes);
 
-    public static Slash getSlashType(String s){
+    static Slash getSlashType(String s){
         if(s.equals("/")) {
             return Slash.SSLASH;
         } else if (s.equals("//")){

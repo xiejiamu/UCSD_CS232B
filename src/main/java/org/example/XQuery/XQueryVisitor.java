@@ -28,12 +28,15 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     private Document document;
 
     public XQueryVisitor(Document document) {
+        this.init();
+        this.document = document;
+    }
 
+    private void init() {
         this.map = new HashMap<>();
         this.stack = new Stack<>();
         this.xPathEvaluator = new XPathEvaluator();
         this.expressionVisitor = new ExpressionVisitor();
-        this.document = document;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         BaseXQuery query = visit(ctx.xq());
         Expression exp = this.expressionVisitor.visit(xPathEvaluator.createParser(ctx.rp().getText()).rp());
         String op = ctx.slash().getText();
-        return new RpXq(query, op, exp);
+        return new RpXq(query, BaseXQuery.getSlashType(op), exp);
     }
 
     @Override

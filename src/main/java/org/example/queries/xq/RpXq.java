@@ -12,10 +12,10 @@ import java.util.List;
 public class RpXq implements BaseXQuery {
 
     private final BaseXQuery query;
-    private final String op;
+    private final BaseXQuery.Slash op;
     private final Expression rp;
 
-    public RpXq(BaseXQuery query, String op, Expression rp) {
+    public RpXq(BaseXQuery query, BaseXQuery.Slash op, Expression rp) {
         this.query = query;
         this.op = op;
         this.rp = rp;
@@ -24,9 +24,9 @@ public class RpXq implements BaseXQuery {
     @Override
     public List<Node> evaluate(Document doc) throws Exception {
         List<Node> res = this.query.evaluate(doc);
-        if (this.op.equals("/")) {
+        if (this.op == Slash.SSLASH) {
             return new ArrayList<>(new HashSet<>(this.rp.evaluate(res)));
-        } else { // this.op.equals("//")
+        } else {
             List<Node> descendingList = new ArrayList<>();
             getAllDescentNodes(res, descendingList);
             return new ArrayList<>(new HashSet<>(this.rp.evaluate(descendingList)));
