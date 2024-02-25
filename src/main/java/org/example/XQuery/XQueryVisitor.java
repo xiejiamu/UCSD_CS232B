@@ -7,6 +7,7 @@ import org.example.expressions.Expression;
 import org.example.parsers.XQueryBaseVisitor;
 import org.example.parsers.XQueryParser;
 import org.example.queries.BaseXQuery;
+import org.example.queries.cond.*;
 import org.example.queries.xq.ParenthesizedXq;
 import org.example.queries.xq.RpXq;
 import org.example.queries.xq.StringXq;
@@ -147,7 +148,8 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         }
     }
 
-    @Override public BaseXQuery visitForXq(XQueryParser.ForXqContext ctx) {
+    @Override
+    public BaseXQuery visitForXq(XQueryParser.ForXqContext ctx) {
         List<Node> res = new ArrayList<>();
         try {
             this.forXq(0, res, ctx);
@@ -156,5 +158,74 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         }
         // use VarXq as a simple solution
         return new VarXq(res);
+    }
+
+    @Override
+    public BaseXQuery visitEqCond1(XQueryParser.EqCond1Context ctx) {
+        BaseXQuery q1 = visit(ctx.xq(0));
+        BaseXQuery q2 = visit(ctx.xq(1));
+        return new EqCond(q1, q2);
+    }
+
+    @Override
+    public BaseXQuery visitEqCond2(XQueryParser.EqCond2Context ctx) {
+        BaseXQuery q1 = visit(ctx.xq(0));
+        BaseXQuery q2 = visit(ctx.xq(1));
+        return new EqCond(q1, q2);
+    }
+
+    @Override
+    public BaseXQuery visitIsCond1(XQueryParser.IsCond1Context ctx) {
+        BaseXQuery q1 = visit(ctx.xq(0));
+        BaseXQuery q2 = visit(ctx.xq(1));
+        return new IsCond(q1, q2);
+    }
+
+    @Override
+    public BaseXQuery visitIsCond2(XQueryParser.IsCond2Context ctx) {
+        BaseXQuery q1 = visit(ctx.xq(0));
+        BaseXQuery q2 = visit(ctx.xq(1));
+        return new IsCond(q1, q2);
+    }
+
+    @Override
+    public BaseXQuery visitEmptyCond(XQueryParser.EmptyCondContext ctx) {
+        BaseXQuery query = visit(ctx.xq());
+        return new EmptyCond(query);
+    }
+
+    @Override
+    public BaseXQuery visitSatisfyCond(XQueryParser.SatisfyCondContext ctx) {
+        this.constructClause(ctx.satisfy().VAR(), ctx.satisfy().xq());
+
+        BaseXQuery finalCond = visit(ctx.cond());
+        BaseXQuery condQuery = null;
+        try {
+            condQuery = new SatisfyCond(finalCond.evaluate(this.document));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.deconstructClause(ctx.satisfy().VAR().size());
+        }
+
+        return condQuery;
+    }
+
+    @Override
+    public BaseXQuery visitParenthesizedCond(XQueryParser.ParenthesizedCondContext ctx) {
+        return visit(ctx.cond());
+    }
+
+    @Override
+    public BaseXQuery visitCompoundCond(XQueryParser.CompoundCondContext ctx) {
+        BaseXQuery c1 = visit(ctx.cond(0));
+        BaseXQuery c2 = visit(ctx.cond(1));
+        String conj = ctx.logic().getText();
+        return new CompoundCond(c1, c2, conj);
+    }
+
+    @Override
+    public BaseXQuery visitNegatedCond(XQueryParser.NegatedCondContext ctx) {
+        return new NegatedCond(visit(ctx.cond()));
     }
 }
