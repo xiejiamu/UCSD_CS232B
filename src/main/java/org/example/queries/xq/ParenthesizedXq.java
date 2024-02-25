@@ -5,7 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.List;
-
+@Deprecated
 public class ParenthesizedXq implements BaseXQuery {
     private final BaseXQuery query;
 

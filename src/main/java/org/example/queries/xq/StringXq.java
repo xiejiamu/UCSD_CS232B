@@ -6,8 +6,10 @@ import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class StringXq implements BaseXQuery {
     final private String str;
 
@@ -17,6 +19,6 @@ public class StringXq implements BaseXQuery {
 
     @Override
     public List<Node> evaluate(Document doc) throws Exception {
-        return new ArrayList<>(Arrays.asList(makeText(doc, this.str)));
+        return new ArrayList<>(Collections.singletonList(makeText(doc, this.str)));
     }
 }

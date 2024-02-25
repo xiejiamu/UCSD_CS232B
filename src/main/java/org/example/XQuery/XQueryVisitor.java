@@ -19,7 +19,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     private Stack<Map<String, List<Node>>> stack;
     private XPathEvaluator xPathEvaluator;
     private ExpressionVisitor expressionVisitor;
-    private Document document;
+    private final Document document;
 
     public XQueryVisitor(Document document) {
         this.init();
@@ -37,7 +37,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     public BaseXQuery visitVarXq(XQueryParser.VarXqContext ctx) {
         List<Node> nodes = this.map.get(ctx.VAR().getText());
         List<Node> reslist = new ArrayList<>(nodes);
-        return new SimpleXq(reslist, SimpleXq.Type.VAR);
+        return new SimpleXq<>(reslist, SimpleXq.Type.VAR);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new SimpleXq(list, SimpleXq.Type.AP);
+        return new SimpleXq<>(list, SimpleXq.Type.AP);
     }
 
     @Override
@@ -64,7 +64,8 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     @Override
     public BaseXQuery visitStringXq(XQueryParser.StringXqContext ctx) {
         String stringConstant = ctx.STRING().getText();
-        return new StringXq(stringConstant.substring(1, stringConstant.length()-1));
+        stringConstant = stringConstant.substring(1, stringConstant.length()-1);
+        return new SimpleXq<>(stringConstant, SimpleXq.Type.STRING);
     }
 
     @Override
@@ -78,7 +79,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     @Override
     public BaseXQuery visitParenthesizedXq(XQueryParser.ParenthesizedXqContext ctx) {
         BaseXQuery query = visit(ctx.xq());
-        return new ParenthesizedXq(query);
+        return new SimpleXq<>(query, SimpleXq.Type.PARENTHESIZED);
     }
 
     @Override
@@ -138,7 +139,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
             for(Node node : nodeList) {
                 Map<String, List<Node>> oldMap = new HashMap<>(this.map);
                 this.stack.push(oldMap);
-                this.map.put(varName, Arrays.asList(node));
+                this.map.put(varName, Collections.singletonList(node));
                 this.forXq(count+1, res, ctx);
                 this.map = this.stack.pop();
             }
@@ -154,7 +155,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
             e.printStackTrace();
         }
         // use VarXq as a simple solution
-        return new SimpleXq(res, SimpleXq.Type.VAR);
+        return new SimpleXq<>(res, SimpleXq.Type.VAR);
     }
 
     @Override
