@@ -26,11 +26,12 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     private ExpressionVisitor expressionVisitor;
     private Document document;
 
-    public XQueryVisitor(Map<String, List<Node>> map, Stack<Map<String, List<Node>>> stack, XPathEvaluator xPathEvaluator, ExpressionVisitor expressionVisitor, Document document) {
-        this.map = map;
-        this.stack = stack;
-        this.xPathEvaluator = xPathEvaluator;
-        this.expressionVisitor = expressionVisitor;
+    public XQueryVisitor(Document document) {
+
+        this.map = new HashMap<>();
+        this.stack = new Stack<>();
+        this.xPathEvaluator = new XPathEvaluator();
+        this.expressionVisitor = new ExpressionVisitor();
         this.document = document;
     }
 
@@ -80,6 +81,16 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     public BaseXQuery visitParenthesizedXq(XQueryParser.ParenthesizedXqContext ctx) {
         BaseXQuery query = visit(ctx.xq());
         return new ParenthesizedXq(query);
+    }
+
+    @Override
+    public BaseXQuery visitLetXq(XQueryParser.LetXqContext ctx) {
+        List<TerminalNode> var = ctx.letClause().VAR();
+        List<XQueryParser.XqContext> query = ctx.letClause().xq();
+        this.constructClause(var, query);
+        BaseXQuery res = visit(ctx.xq());
+        this.deconstructClause(ctx.letClause().VAR().size());
+        return res;
     }
 
     private void constructClause(List<TerminalNode> varList, List<XQueryParser.XqContext> queryList) {
