@@ -18,6 +18,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.FileOutputStream;
 import java.util.List;
 
 public class XQueryEvaluator {
@@ -46,12 +47,32 @@ public class XQueryEvaluator {
         outputTransformedNodes(result);
     }
 
+    public void execute(String path, String outputpath) throws Exception {
+        List<Node> nodes = evaluateXQuery(path);
+        outputTransformedNodes(nodes, outputpath);
+    }
+
     public void outputTransformedNodes(List<Node> nodes) throws Exception {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         configureTransformer(transformer);
         for (Node node : nodes) {
             printNodeContent(node, transformer);
         }
+    }
+
+    public void outputTransformedNodes(List<Node> result, String outputpath) throws Exception {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        configureTransformer(transformer);
+
+        // 使用FileOutputStream定向输出到文件，而不是System.out
+        FileOutputStream fos = new FileOutputStream(outputpath, false); // false表示不追加，即覆盖原文件
+        StreamResult streamResult = new StreamResult(fos);
+
+        for (Node node : result) {
+            transformer.transform(new DOMSource(node), streamResult);
+        }
+
+        fos.close(); // 完成后关闭文件输出流
     }
 
     private void configureTransformer(Transformer transformer) {
