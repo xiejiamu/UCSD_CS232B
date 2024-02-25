@@ -5,16 +5,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.List;
-@Deprecated
-public class ApXq implements BaseXQuery {
-    private final List<Node> list;
 
-    public ApXq(List<Node> list) {
+public class SimpleXq<T> implements BaseXQuery {
+    private final Type type;
+    private final T list;
+    public SimpleXq(T list, Type type) {
         this.list = list;
+        this.type = type;
+    }
+
+    public enum Type {
+        AP, VAR
     }
 
     @Override
     public List<Node> evaluate(Document document) throws Exception {
-        return this.list;
+        return (List<Node>) this.list;
     }
 }

@@ -8,13 +8,7 @@ import org.example.parsers.XQueryBaseVisitor;
 import org.example.parsers.XQueryParser;
 import org.example.queries.BaseXQuery;
 import org.example.queries.cond.*;
-import org.example.queries.xq.ParenthesizedXq;
-import org.example.queries.xq.RpXq;
-import org.example.queries.xq.StringXq;
-import org.example.queries.xq.ApXq;
-import org.example.queries.xq.BinaryXq;
-import org.example.queries.xq.TagXq;
-import org.example.queries.xq.VarXq;
+import org.example.queries.xq.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -43,7 +37,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     public BaseXQuery visitVarXq(XQueryParser.VarXqContext ctx) {
         List<Node> nodes = this.map.get(ctx.VAR().getText());
         List<Node> reslist = new ArrayList<>(nodes);
-        return new VarXq(reslist);
+        return new SimpleXq(reslist, SimpleXq.Type.VAR);
     }
 
     @Override
@@ -51,10 +45,10 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         List<Node> list = new ArrayList<>();
         try {
             list = this.xPathEvaluator.evaluateXPath(ctx.ap().getText());
-        } catch (Exception e) { // Replace SpecificException with the actual exception type
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ApXq(list);
+        return new SimpleXq(list, SimpleXq.Type.AP);
     }
 
     @Override
@@ -160,7 +154,7 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
             e.printStackTrace();
         }
         // use VarXq as a simple solution
-        return new VarXq(res);
+        return new SimpleXq(res, SimpleXq.Type.VAR);
     }
 
     @Override
