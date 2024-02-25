@@ -17,13 +17,8 @@ public class EmptyCond implements BaseXQuery {
     }
 
     @Override
-    // if returned list is NULL, then the condition is false
-    // Or it is true
     public List<Node> evaluate(Document doc) throws Exception {
         List<Node> res = this.query.evaluate(doc);
-        if(null == res || res.isEmpty()) {
-            return Arrays.asList();
-        }
-        return null;
+        return (null == res || res.isEmpty())?Arrays.asList():null;
     }
 }

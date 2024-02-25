@@ -19,9 +19,6 @@ public class NegatedCond implements BaseXQuery {
     @Override
     public List<Node> evaluate(Document doc) throws Exception {
         List<Node> res = this.cond.evaluate(doc);
-        if(null == res) {
-            return Arrays.asList();
-        }
-        return null;
+        return (null == res)?Arrays.asList():null;
     }
 }

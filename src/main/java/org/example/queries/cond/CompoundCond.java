@@ -23,16 +23,9 @@ public class CompoundCond implements BaseXQuery {
     @Override
     public List<Node> evaluate(Document doc) throws Exception {
         List<Node> leftRes = this.cond1.evaluate(doc);
-
-        if(this.conj.equals("or")) {
-            if(null != leftRes || this.cond2.evaluate(doc) != null) {
-                return Arrays.asList();
-            }
-        }else{
-            if(null != leftRes && this.cond2.evaluate(doc) != null) {
-                return Arrays.asList();
-            }
-        }
-        return null;
+        List<Node> rightRes = this.cond2.evaluate(doc);
+        return (this.conj.equals("or"))?
+                ((null != leftRes || rightRes != null)?Arrays.asList():null):
+                ((null != leftRes && rightRes != null)?Arrays.asList():null);
     }
 }
