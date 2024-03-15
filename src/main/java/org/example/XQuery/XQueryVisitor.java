@@ -8,6 +8,7 @@ import org.example.parsers.XQueryBaseVisitor;
 import org.example.parsers.XQueryParser;
 import org.example.queries.BaseXQuery;
 import org.example.queries.cond.*;
+import org.example.queries.join.Join;
 import org.example.queries.xq.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -225,5 +226,51 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
     @Override
     public BaseXQuery visitNegatedCond(XQueryParser.NegatedCondContext ctx) {
         return new NegatedCond(visit(ctx.cond()));
+    }
+
+    @Override public BaseXQuery visitJoinXq(XQueryParser.JoinXqContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    @Override public BaseXQuery visitSimpleJoin(XQueryParser.SimpleJoinContext ctx) {
+        BaseXQuery left = visit(ctx.xq(0));
+        BaseXQuery right = visit(ctx.xq(1));
+        List<String> leftAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(0).ID().size(); i ++) {
+            leftAtt.add(ctx.constantList(0).ID(i).getText());
+        }
+        List<String> rightAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(1).ID().size(); i ++) {
+            rightAtt.add(ctx.constantList(1).ID(i).getText());
+        }
+        return new Join(left, right, leftAtt, rightAtt);
+    }
+
+    @Override public BaseXQuery visitNestedJoinLeft(XQueryParser.NestedJoinLeftContext ctx) {
+        BaseXQuery left = visit(ctx.joinClause());
+        BaseXQuery right = visit(ctx.xq());
+        List<String> leftAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(0).ID().size(); i ++) {
+            leftAtt.add(ctx.constantList(0).ID(i).getText());
+        }
+        List<String> rightAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(1).ID().size(); i ++) {
+            rightAtt.add(ctx.constantList(1).ID(i).getText());
+        }
+        return new Join(left, right, leftAtt, rightAtt);
+    }
+
+    @Override public BaseXQuery visitNestedJoinRight(XQueryParser.NestedJoinRightContext ctx) {
+        BaseXQuery left = visit(ctx.xq());
+        BaseXQuery right = visit(ctx.joinClause());
+        List<String> leftAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(0).ID().size(); i ++) {
+            leftAtt.add(ctx.constantList(0).ID(i).getText());
+        }
+        List<String> rightAtt = new ArrayList<>();
+        for (int i = 0; i < ctx.constantList(1).ID().size(); i ++) {
+            rightAtt.add(ctx.constantList(1).ID(i).getText());
+        }
+        return new Join(left, right, leftAtt, rightAtt);
     }
 }
