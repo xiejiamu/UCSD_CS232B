@@ -18,6 +18,18 @@ public class XQueryBaseListener implements XQueryListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTagXqNoBrackets(XQueryParser.TagXqNoBracketsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTagXqNoBrackets(XQueryParser.TagXqNoBracketsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRpXq(XQueryParser.RpXqContext ctx) { }
 	/**
 	 * {@inheritDoc}

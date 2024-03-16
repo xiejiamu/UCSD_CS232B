@@ -10,6 +10,18 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface XQueryListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by the {@code TagXqNoBrackets}
+	 * labeled alternative in {@link XQueryParser#xq}.
+	 * @param ctx the parse tree
+	 */
+	void enterTagXqNoBrackets(XQueryParser.TagXqNoBracketsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TagXqNoBrackets}
+	 * labeled alternative in {@link XQueryParser#xq}.
+	 * @param ctx the parse tree
+	 */
+	void exitTagXqNoBrackets(XQueryParser.TagXqNoBracketsContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code RpXq}
 	 * labeled alternative in {@link XQueryParser#xq}.
 	 * @param ctx the parse tree

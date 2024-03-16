@@ -9,6 +9,7 @@ xq: VAR                           #VarXq
   | xq COMMA xq                   #BinaryXq
   | xq slash rp                  #RpXq
   | startTag LBB xq RBB endTag    #TagXq
+  | startTag xq endTag               #TagXqNoBrackets
   | forClause (letClause)? (whereClause)? returnClause #ForXq
   | letClause xq                  #LetXq
   | joinClause                    #JoinXq;

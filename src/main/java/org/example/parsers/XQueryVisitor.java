@@ -13,6 +13,13 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface XQueryVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by the {@code TagXqNoBrackets}
+	 * labeled alternative in {@link XQueryParser#xq}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTagXqNoBrackets(XQueryParser.TagXqNoBracketsContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code RpXq}
 	 * labeled alternative in {@link XQueryParser#xq}.
 	 * @param ctx the parse tree

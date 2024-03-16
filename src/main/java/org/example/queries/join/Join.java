@@ -15,89 +15,80 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public class Join implements BaseXQuery {
-    public Join (BaseXQuery left, BaseXQuery right, List<String> leftAtt, List<String> rightAtt) {
-        this.left = left;
-        this.right = right;
-        this.leftAtt = leftAtt;
-        this.rightAtt = rightAtt;
-    }
+    private BaseXQuery leftQuery;
+    private BaseXQuery rightQuery;
+    private List<String> leftAttributes;
+    private List<String> rightAttributes;
+    private Transformer transformerInstance;
 
-    public void setTransFormer() throws TransformerConfigurationException {
-        TransformerFactory tfFactory = TransformerFactory.newInstance();
-        this.tf = tfFactory.newTransformer();
-        this.tf.setOutputProperty(OutputKeys.INDENT, "yes");
+    public Join(BaseXQuery left, BaseXQuery right, List<String> leftAtt, List<String> rightAtt) {
+        this.leftQuery = left;
+        this.rightQuery = right;
+        this.leftAttributes = leftAtt;
+        this.rightAttributes = rightAtt;
     }
 
     @Override
     public List<Node> evaluate(Document doc) throws Exception {
-        this.setTransFormer();
-        List<Node> output = new ArrayList<>();
-        List<Node> leftNodes = this.left.evaluate(doc);
-        List<Node> rightNodes = this.right.evaluate(doc);
-        Map<String, List<Node>> leftMap = new HashMap<>();
-        // cartesian product
-        if(this.leftAtt.size() == 0 || this.rightAtt.size() == 0) {
-            for (Node leftTuple : leftNodes) {
-                for (Node rightTuple : rightNodes) {
-                    output.add(this.concatTuple(doc, leftTuple, rightTuple));
+        TransformerFactory tfFactory = TransformerFactory.newInstance();
+        this.transformerInstance = tfFactory.newTransformer();
+        this.transformerInstance.setOutputProperty(OutputKeys.INDENT, "yes");
+        this.transformerInstance.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        List<Node> resultNodes = new ArrayList<>();
+        List<Node> nodesFromLeft = this.leftQuery.evaluate(doc);
+        List<Node> nodesFromRight = this.rightQuery.evaluate(doc);
+        Map<String, List<Node>> mapForLeft = new HashMap<>();
+
+        if (this.leftAttributes.isEmpty() || this.rightAttributes.isEmpty()) {
+            for (Node leftNode : nodesFromLeft) {
+                for (Node rightNode : nodesFromRight) {
+                    resultNodes.add(concatNodes(doc, leftNode, rightNode));
                 }
             }
         } else {
-            // in-memory hash join
-            for(Node leftTuple: leftNodes) {
-                String hashIndex = this.buildHashIndex(leftTuple, this.leftAtt);
-                if(!leftMap.containsKey(hashIndex)) {
-                    leftMap.put(hashIndex, new ArrayList<>());
-                }
-                leftMap.get(hashIndex).add(leftTuple);
+            for (Node leftNode : nodesFromLeft) {
+                String key = createHashKey(leftNode, this.leftAttributes);
+                mapForLeft.computeIfAbsent(key, k -> new ArrayList<>()).add(leftNode);
             }
-            for(Node rightTuple: rightNodes) {
-                String hashIndex = this.buildHashIndex(rightTuple, this.rightAtt);
-                if(leftMap.containsKey(hashIndex)) {
-                    List<Node> matchedList = leftMap.get(hashIndex);
-                    for (Node node : matchedList) {
-                        output.add(this.concatTuple(doc, node, rightTuple));
+            for (Node rightNode : nodesFromRight) {
+                String key = createHashKey(rightNode, this.rightAttributes);
+                if (mapForLeft.containsKey(key)) {
+                    for (Node matchingNode : mapForLeft.get(key)) {
+                        resultNodes.add(concatNodes(doc, matchingNode, rightNode));
                     }
                 }
             }
         }
-        return output;
+        return resultNodes;
     }
 
-    private String buildHashIndex(Node tuple, List<String> attrs) throws TransformerException, UnsupportedEncodingException {
-        StringBuilder index = new StringBuilder();
-        Map<String, Node> tag2Var = new HashMap<>();
-        NodeList childNodes = tuple.getChildNodes();
-        for(int i=0; i<childNodes.getLength(); i++) {
-            assert childNodes.item(i).getChildNodes().getLength() == 1;
-            tag2Var.put(childNodes.item(i).getNodeName(), childNodes.item(i).getChildNodes().item(0));
+    private String createHashKey(Node node, List<String> attributes) throws TransformerException, UnsupportedEncodingException {
+        StringBuilder keyBuilder = new StringBuilder();
+        Map<String, Node> mapping = new HashMap<>();
+        NodeList childElements = node.getChildNodes();
+        for (int i = 0; i < childElements.getLength(); i++) {
+            Node current = childElements.item(i);
+            assert current.getChildNodes().getLength() == 1;
+            mapping.put(current.getNodeName(), current.getFirstChild());
         }
-        for(String attr: attrs) {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            this.tf.transform(new DOMSource(tag2Var.get(attr)), new StreamResult(
-                    new PrintStream(os)));
-            index.append(os.toString("UTF8"));
-            index.append("+");
+        for (String attr : attributes) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            this.transformerInstance.transform(new DOMSource(mapping.get(attr)), new StreamResult(new PrintStream(outputStream)));
+            keyBuilder.append(outputStream.toString("UTF8")).append("|");
         }
-        return index.toString();
+        return keyBuilder.toString();
     }
 
-    private Node concatTuple(Document doc, Node t1, Node t2) {
-        Element tuple = doc.createElement("tuple");
-        NodeList left = t1.getChildNodes();
-        for (int i = 0; i < left.getLength(); i++) {
-            tuple.appendChild(left.item(i).cloneNode(true));
+    private Node concatNodes(Document doc, Node first, Node second) {
+        Element combinedNode = doc.createElement("combinedTuple");
+        NodeList firstChildNodes = first.getChildNodes();
+        for (int i = 0; i < firstChildNodes.getLength(); i++) {
+            combinedNode.appendChild(firstChildNodes.item(i).cloneNode(true));
         }
-        NodeList right = t2.getChildNodes();
-        for (int i = 0; i < right.getLength(); i++) {
-            tuple.appendChild(right.item(i).cloneNode(true));
+        NodeList secondChildNodes = second.getChildNodes();
+        for (int i = 0; i < secondChildNodes.getLength(); i++) {
+            combinedNode.appendChild(secondChildNodes.item(i).cloneNode(true));
         }
-        return tuple;
+        return combinedNode;
     }
-
-    private BaseXQuery left;
-    private BaseXQuery right;
-    private List<String> leftAtt;
-    private List<String> rightAtt;
-    private Transformer tf;
 }
