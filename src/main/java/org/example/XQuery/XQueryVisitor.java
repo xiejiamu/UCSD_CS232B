@@ -128,27 +128,42 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
 
     private void forXq(int count, List<Node> res, XQueryParser.ForXqContext ctx) throws Exception {
         int size = ctx.forClause().VAR().size();
-        if(count == size) {
-            // should execute where
-            if(null != ctx.letClause()) {
-                this.constructClause(ctx.letClause().VAR(), ctx.letClause().xq());
-            }
-            if(null == ctx.whereClause() || (null != ctx.whereClause() && null != visit(ctx.whereClause().cond()).evaluate(this.document))) {
+        if (count == size) {
+            // Check let clause and where clause conditions
+            processLetClause(ctx.letClause());
+            if (isWhereClauseSatisfied(ctx.whereClause())) {
                 res.addAll(visit(ctx.returnClause().xq()).evaluate(this.document));
             }
-            if(null != ctx.letClause()) {
-                this.deconstructClause(ctx.letClause().VAR().size());
-            }
+            rollbackLetClause(ctx.letClause());
         } else {
-            String varName = ctx.forClause().VAR(count).getText();
-            List<Node> nodeList = visit(ctx.forClause().xq(count)).evaluate(this.document);
-            for(Node node : nodeList) {
-                Map<String, List<Node>> oldMap = new HashMap<>(this.map);
-                this.stack.push(oldMap);
-                this.map.put(varName, Collections.singletonList(node));
-                this.forXq(count+1, res, ctx);
-                this.map = this.stack.pop();
-            }
+            iterateVariableBindings(count, res, ctx);
+        }
+    }
+
+    private void processLetClause(XQueryParser.LetClauseContext letClause) throws Exception {
+        if (letClause != null) {
+            this.constructClause(letClause.VAR(), letClause.xq());
+        }
+    }
+
+    private boolean isWhereClauseSatisfied(XQueryParser.WhereClauseContext whereClause) throws Exception {
+        return whereClause == null || (whereClause != null && visit(whereClause.cond()).evaluate(this.document) != null);
+    }
+
+    private void rollbackLetClause(XQueryParser.LetClauseContext letClause) {
+        if (letClause != null) {
+            this.deconstructClause(letClause.VAR().size());
+        }
+    }
+
+    private void iterateVariableBindings(int count, List<Node> res, XQueryParser.ForXqContext ctx) throws Exception {
+        String varName = ctx.forClause().VAR(count).getText();
+        List<Node> nodeList = visit(ctx.forClause().xq(count)).evaluate(this.document);
+        for (Node node : nodeList) {
+            this.stack.push(new HashMap<>(this.map));
+            this.map.put(varName, Collections.singletonList(node));
+            this.forXq(count + 1, res, ctx);
+            this.map = this.stack.pop();
         }
     }
 
@@ -160,9 +175,9 @@ public class XQueryVisitor extends XQueryBaseVisitor<BaseXQuery> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // use VarXq as a simple solution
         return new SimpleXq<>(res, SimpleXq.Type.VAR);
     }
+
 
     @Override
     public BaseXQuery visitEqCond1(XQueryParser.EqCond1Context ctx) {
