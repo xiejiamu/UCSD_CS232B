@@ -6,14 +6,15 @@ import org.example.parsers.XQueryParser;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Rewriter {
     public static String convert(XQueryParser.ForXqContext ctx) {
         StringBuilder sb = new StringBuilder();
         List<Map<String, String>> forList = new ArrayList<>();
         List<Map<Integer, String>> forOrderList = new ArrayList<>();
+
         // Construct forList and forOrderList
         IntStream.range(0, ctx.forClause().VAR().size()).forEach(i -> {
             String var = ctx.forClause().VAR(i).getText();
@@ -42,7 +43,6 @@ public class Rewriter {
         forList.forEach(ignored -> whereList.add(new ArrayList<>()));
         constructWhereList(ctx, forList, whereList);
 
-
         // Generate rewriters from forList and whereList
         List<Rewriter> reWriterList = IntStream.range(0, forList.size())
                 .mapToObj(i -> {
@@ -52,20 +52,107 @@ public class Rewriter {
                     return reWriter;
                 }).collect(Collectors.toList());
 
-        if (reWriterList.isEmpty()) {
+        if(reWriterList.isEmpty()) {
+            // what happens here?
             return "";
         }
 
-        // Build the rewriter string using forList, whereList, and reWriterList
+        // select one rewriter from the list, and join with another one
+        // this would form a new sub for clause, or a group
+        // and continue to join with another one
+        // until all joined
         Set<Integer> picked = new HashSet<>();
         picked.add(0);
         Set<String> varSet = new HashSet<>(forList.get(0).keySet());
         sb.append(reWriterList.get(0).convertToString());
-        buildRewriterString(forList, whereList, reWriterList, picked, varSet, sb);
+        while(picked.size() != forList.size()) {
+            int beforeLength = picked.size();
+            for(int i=1; i<forList.size(); i++) {
+                if(picked.contains(i)) {
+                    continue;
+                }
+                List<String> condLeft = new ArrayList<>();
+                List<String> condRight = new ArrayList<>();
+                for(Pair<String, String> pair : whereList.get(i)) {
+                    String left = pair.a, right = pair.b;
+                    if((varSet.contains(left) && forList.get(i).containsKey(right)) ||
+                            (varSet.contains(right) && forList.get(i).containsKey(left))) {
+                        // this is a match
+                        if (varSet.contains(left)) {
+                            condLeft.add(left);
+                            condRight.add(right);
+                        } else {
+                            condLeft.add(right);
+                            condRight.add(left);
+                        }
+                    }
+                }
+                if(!condLeft.isEmpty()) {
+                    // so existing sub for clause could join with the ith for clause
+                    picked.add(i);
+                    varSet.addAll(forList.get(i).keySet());
+                    sb.insert(0, "join (");
+                    sb.append(reWriterList.get(i).convertToString());
+                    sb.append("[");
+                    for(String left : condLeft) {
+                        sb.append(left.substring(1));  // remove $
+                        sb.append(",");
+                    }
+                    sb.deleteCharAt(sb.length()-1);  // remove last comma
+                    sb.append("], ");
+                    sb.append("[");
+                    for(String right : condRight) {
+                        sb.append(right.substring(1));  // remove $
+                        sb.append(",");
+                    }
+                    sb.deleteCharAt(sb.length()-1);  // remove last comma
+                    sb.append("]");
+                    sb.append("\n");
+                    sb.append("),\n");
+                }
+            }
 
+            if(beforeLength == picked.size()) {
+                int index = IntStream.range(0, forList.size()).filter(i -> !picked.contains(i)).findFirst().orElse(-1);
+                if(index == -1) {
+                    continue;
+                }
+                // here we get some group(s) that currently has no join conditions
+                // empty join (cartesian product)
+                picked.add(index);
+                varSet.addAll(forList.get(index).keySet());
+                sb.insert(0, "join (");
+                sb.append(reWriterList.get(index).convertToString());
+                sb.append("[], []\n),\n");
+            }
+        }
+        sb.deleteCharAt(sb.length()-2);
 
-        // Append return clause
-        appendReturnClause(ctx, sb);
+        // at very first
+        sb.insert(0, "for $tuple in ");
+
+        // process return clause
+        String returnText = ctx.returnClause().xq().getText();
+        Set<String> returnedVars = new HashSet<>();
+        for(int i=0; i<returnText.length(); i++) {
+            if(returnText.charAt(i) == '$') {
+                for(int j=i+1; j<returnText.length(); j++) {
+                    char c = returnText.charAt(j);
+                    if(c == ',' || c == '/' || c == ' ' || c == '}') {
+                        returnedVars.add(returnText.substring(i, j));
+                        i = j;
+                        break;
+                    }
+                }
+            }
+        }
+        for(String var : returnedVars) {
+            String newVar = "$tuple/" + var.substring(1) + "/" + "*";
+            var = Pattern.quote("$") + var.substring(1);
+            returnText = returnText.replaceAll(var, Matcher.quoteReplacement(newVar));
+        }
+        sb.append("return\n");
+        sb.append(returnText);
         return sb.toString();
     }
 
@@ -82,6 +169,7 @@ public class Rewriter {
             });
         });
     }
+
 
     private static void buildRewriterString(List<Map<String, String>> forList, List<List<Pair<String, String>>> whereList,
                                             List<Rewriter> reWriterList, Set<Integer> picked, Set<String> varSet, StringBuilder sb) {
@@ -125,18 +213,6 @@ public class Rewriter {
             }
         }
     }
-    private static void appendReturnClause(XQueryParser.ForXqContext ctx, StringBuilder sb) {
-        String returnText = ctx.returnClause().xq().getText();
-        Pattern varPattern = Pattern.compile("\\$(\\w+)");
-        Matcher matcher = varPattern.matcher(returnText);
-        while (matcher.find()) {
-            String var = matcher.group();
-            // Use Matcher.quoteReplacement to avoid illegal group reference
-            returnText = returnText.replaceAll(Pattern.quote(var), Matcher.quoteReplacement("$tuple/" + var.substring(1)));
-        }
-        sb.append("return ").append(returnText);
-    }
-
     private static void handleNoJoinConditions(List<Map<String, String>> forList, Set<Integer> picked, Set<String> varSet,
                                                StringBuilder sb, List<Rewriter> reWriterList) {
         for (int i = 0; i < forList.size(); i++) {
@@ -150,16 +226,31 @@ public class Rewriter {
         }
         trimStringBuilder(sb);
     }
+
+    private static void appendReturnClause(XQueryParser.ForXqContext ctx, StringBuilder sb) {
+        String returnText = ctx.returnClause().xq().getText();
+        Pattern varPattern = Pattern.compile("\\$(\\w+)");
+        Matcher matcher = varPattern.matcher(returnText);
+        while (matcher.find()) {
+            String var = matcher.group();
+            // Use Matcher.quoteReplacement to avoid illegal group reference
+            returnText = returnText.replaceAll(Pattern.quote(var), Matcher.quoteReplacement("$tuple/" + var.substring(1)));
+        }
+        sb.append("return ").append(returnText);
+    }
+
+
     private static void trimStringBuilder(StringBuilder sb) {
         if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ',') {
             sb.deleteCharAt(sb.length() - 1);
         }
     }
 
-
+    // Other instance methods remain unchanged...
     private final Map<String, String> forMap = new HashMap<>();
     private final Map<Integer, String> forOrderMap = new HashMap<>();
     private final List<Pair<String, String>> condList = new ArrayList<>();
+
 
     private Rewriter() {
     }
@@ -167,7 +258,6 @@ public class Rewriter {
     public void setForMap(Map<String, String> map, Map<Integer, String> order) {
         this.forMap.clear();
         this.forMap.putAll(map);
-        this.forOrderMap.clear();
         this.forOrderMap.putAll(order);
     }
 
@@ -176,26 +266,69 @@ public class Rewriter {
         this.condList.addAll(list);
     }
 
-    private String convertToString() {
-        StringBuilder sb = new StringBuilder();
-        forOrderMap.keySet().stream().sorted().forEach(key -> {
-            String var = forOrderMap.get(key);
-            String xq = forMap.get(var);
-            sb.append("for ").append(var).append(" in ").append(xq).append(",\n");
-        });
-        trimStringBuilder(sb);
-        if (!condList.isEmpty()) {
-            sb.append("where ");
-            condList.forEach(pair -> sb.append(pair.a).append(" eq ").append(pair.b).append(",\n"));
-            trimStringBuilder(sb);
+    private String convertForClause() {
+        StringBuilder sb = new StringBuilder("for ");
+        for(int i=0; i<this.forOrderMap.size(); i++) {
+            String var = this.forOrderMap.get(i);
+            String xq = this.forMap.get(var);
+            sb.append(var);
+            sb.append(" ");
+            sb.append("in");
+            sb.append(" ");
+            sb.append(xq);
+            sb.append(",\n");
         }
-        sb.append("return <tuple>{\n");
-        forOrderMap.keySet().stream().sorted().forEach(key -> {
-            String var = forOrderMap.get(key);
-            sb.append("<").append(var.substring(1)).append(">{").append(var).append("}</").append(var.substring(1)).append(">,\n");
-        });
-        trimStringBuilder(sb);
-        sb.append("}</tuple>\n");
+        sb.deleteCharAt(sb.length()-2);  // remove last comma
         return sb.toString();
     }
+
+    private String convertCondClause() {
+        // to see whether we can push down any selection
+        StringBuilder sb = new StringBuilder("where ");
+        boolean pushDown = false;
+        for(Pair<String, String> pair : this.condList) {
+            String condRoot1 = pair.a.split("/")[0];
+            String condRoot2 = pair.b.split("/")[0];
+            if((this.forMap.containsKey(condRoot1) && this.forMap.containsKey(condRoot2)) ||
+                    (this.forMap.containsKey(condRoot1) && !condRoot2.startsWith("$")) ||
+                    (this.forMap.containsKey(condRoot2) && !condRoot1.startsWith("$"))) {
+                if(!pushDown) {
+                    pushDown = true;
+                }
+                sb.append(pair.a);
+                sb.append(" eq ");
+                sb.append(pair.b);
+                sb.append(",\n");
+            }
+        }
+        if(pushDown) {
+            sb.deleteCharAt(sb.length()-2);  // remove last comma
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
+
+    private String convertReturnClause() {
+        StringBuilder sb = new StringBuilder("return ");
+        sb.append("<tuple>{\n");
+        for(int i=0; i<this.forOrderMap.size(); i++) {
+            String var = this.forOrderMap.get(i);
+            String rawName = var.substring(1);
+            sb.append("<").append(rawName).append(">{");
+            sb.append(var);
+            sb.append("}<").append("/").append(rawName).append(">");
+            sb.append(",\n");
+        }
+        sb.deleteCharAt(sb.length()-2);  // remove last comma
+        sb.append("}</tuple>,\n");
+        return sb.toString();
+    }
+
+    public String convertToString() {
+        return this.convertForClause() +
+                this.convertCondClause() +
+                this.convertReturnClause();
+    }
+
 }
