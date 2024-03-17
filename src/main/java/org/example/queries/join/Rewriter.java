@@ -53,14 +53,10 @@ public class Rewriter {
                 }).collect(Collectors.toList());
 
         if(reWriterList.isEmpty()) {
-            // what happens here?
             return "";
         }
 
-        // select one rewriter from the list, and join with another one
-        // this would form a new sub for clause, or a group
-        // and continue to join with another one
-        // until all joined
+
         Set<Integer> picked = new HashSet<>();
         picked.add(0);
         Set<String> varSet = new HashSet<>(forList.get(0).keySet());
@@ -77,7 +73,6 @@ public class Rewriter {
                     String left = pair.a, right = pair.b;
                     if((varSet.contains(left) && forList.get(i).containsKey(right)) ||
                             (varSet.contains(right) && forList.get(i).containsKey(left))) {
-                        // this is a match
                         if (varSet.contains(left)) {
                             condLeft.add(left);
                             condRight.add(right);
@@ -88,7 +83,6 @@ public class Rewriter {
                     }
                 }
                 if(!condLeft.isEmpty()) {
-                    // so existing sub for clause could join with the ith for clause
                     picked.add(i);
                     varSet.addAll(forList.get(i).keySet());
                     sb.insert(0, "join (");
@@ -117,8 +111,6 @@ public class Rewriter {
                 if(index == -1) {
                     continue;
                 }
-                // here we get some group(s) that currently has no join conditions
-                // empty join (cartesian product)
                 picked.add(index);
                 varSet.addAll(forList.get(index).keySet());
                 sb.insert(0, "join (");
